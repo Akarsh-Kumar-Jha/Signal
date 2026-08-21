@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Radio, Compass, Zap, Sun, Moon } from 'lucide-react';
+import { Target, Compass, Zap, Sun, Moon, ExternalLink } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 export default function Navbar({ onOpenHowItWorks }) {
@@ -10,21 +10,27 @@ export default function Navbar({ onOpenHowItWorks }) {
   return (
     <header className="w-full bg-[#101114] text-white border-b-2 border-[#18181B] dark:border-[#3F3F46] sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-11 flex items-center justify-between font-mono text-[11px]">
-        {/* Left: Brand Logo & Badge */}
-        <div className="flex items-center gap-2">
-          <Link to="/" className="flex items-center gap-1.5 group shrink-0">
-            <div className="w-6 h-6 bg-[#6C5CE7] border border-white/20 flex items-center justify-center text-white shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
-              <Radio className="w-3.5 h-3.5 text-white" />
+        {/* Left: Brand Logo & BY AKARSH Badge */}
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <Link to="/" className="flex items-center gap-1.5 sm:gap-2 group shrink-0">
+            <div className="w-6 h-6 bg-[#B8E986] border border-black flex items-center justify-center text-black shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+              <Target className="w-3.5 h-3.5 text-black font-bold" />
             </div>
             <span className="font-display font-extrabold text-xs sm:text-sm tracking-wider text-white">
               SIGNAL AI
             </span>
           </Link>
 
-          <div className="hidden md:inline-flex items-center gap-1 px-1.5 py-0.5 bg-[#6C5CE7]/20 border border-[#6C5CE7]/60 text-[#C9BFFF] text-[9px] font-bold tracking-widest uppercase">
-            <span>&lt;&gt;</span>
-            <span>INTELLIGENCE ENGINE</span>
-          </div>
+          <a
+            href="https://akarshjha.dev"
+            target="_blank"
+            rel="noreferrer"
+            className="px-2 py-0.5 bg-[#B8E986] hover:bg-[#a3dc69] text-black border border-black font-mono text-[9px] sm:text-[10px] font-extrabold tracking-wider uppercase flex items-center gap-1 transition-all shadow-2xs hover:scale-105 shrink-0"
+            title="Portfolio of Akarsh Jha"
+          >
+            <span>BY AKARSH</span>
+            <ExternalLink className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-black" />
+          </a>
         </div>
 
         {/* Right: Responsive Nav Links */}

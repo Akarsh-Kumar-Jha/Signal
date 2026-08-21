@@ -9,15 +9,15 @@ export default defineConfig({
     open: false,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://signal-backend-gylj.onrender.com',
         changeOrigin: true,
       },
       '/analyze': {
-        target: 'http://localhost:5000',
+        target: 'https://signal-backend-gylj.onrender.com',
         changeOrigin: true,
       },
       '/health': {
-        target: 'http://localhost:5000',
+        target: 'https://signal-backend-gylj.onrender.com',
         changeOrigin: true,
       },
     },

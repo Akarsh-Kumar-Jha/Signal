@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import PageContainer from '../components/layout/PageContainer';
 import AnalysisProgress from '../components/analysis/AnalysisProgress';
 import ReportHeader from '../components/report/ReportHeader';
@@ -11,6 +11,7 @@ import UncertaintySection from '../components/report/UncertaintySection';
 import WatchNext from '../components/report/WatchNext';
 import SourcesList from '../components/report/SourcesList';
 import ReportQuality from '../components/report/ReportQuality';
+import ClarificationModal from '../components/common/ClarificationModal';
 
 import { analyzeQuery } from '../services/api';
 import { getReport, saveReport, getPendingQuery, removePendingQuery } from '../utils/storage';
@@ -19,10 +20,12 @@ import { AlertCircle, RefreshCw, PlusCircle, Radio } from 'lucide-react';
 
 export default function ReportPage() {
   const { reportId } = useParams();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [report, setReport] = useState(null);
   const [userQuery, setUserQuery] = useState('');
+  const [showClarificationModal, setShowClarificationModal] = useState(false);
 
   const fetchAnalysis = async (queryToRun) => {
     setLoading(true);
@@ -30,9 +33,15 @@ export default function ReportPage() {
     try {
       const rawData = await analyzeQuery(queryToRun);
       const normalized = normalizeReport(rawData, queryToRun);
-      saveReport(reportId, queryToRun, rawData);
-      removePendingQuery(reportId);
-      setReport(normalized);
+      
+      if (normalized.validQuery === false) {
+        setReport(normalized);
+        setShowClarificationModal(true);
+      } else {
+        saveReport(reportId, queryToRun, rawData);
+        removePendingQuery(reportId);
+        setReport(normalized);
+      }
     } catch (err) {
       console.error('Error analyzing query:', err);
       setError(err.message || 'Failed to connect to SignalAI backend.');
@@ -45,8 +54,12 @@ export default function ReportPage() {
     // 1. Check if report already exists in storage
     const cached = getReport(reportId);
     if (cached) {
+      const normalized = normalizeReport(cached.data, cached.query);
       setUserQuery(cached.query);
-      setReport(normalizeReport(cached.data, cached.query));
+      setReport(normalized);
+      if (normalized.validQuery === false) {
+        setShowClarificationModal(true);
+      }
       setLoading(false);
       return;
     }
@@ -72,11 +85,53 @@ export default function ReportPage() {
     }
   }, [reportId]);
 
+  const handleCloseModal = () => {
+    setShowClarificationModal(false);
+    navigate('/');
+  };
+
+  const handleTryNewQuery = () => {
+    setShowClarificationModal(false);
+    navigate('/');
+  };
+
   // Loading State
   if (loading) {
     return (
       <PageContainer>
         <AnalysisProgress userQuery={userQuery || 'Signal Analysis'} />
+      </PageContainer>
+    );
+  }
+
+  // Invalid Query / Clarification Modal Popup
+  if (report && report.validQuery === false) {
+    return (
+      <PageContainer>
+        <ClarificationModal
+          isOpen={showClarificationModal}
+          userQuery={report.userQuery || userQuery}
+          clarification={report.clarification}
+          onClose={handleCloseModal}
+          onTryNewQuery={handleTryNewQuery}
+        />
+        <div className="max-w-md mx-auto px-4 py-20 text-center space-y-4 font-mono">
+          <div className="w-12 h-12 bg-[#F3A6C8]/20 text-[#18181B] dark:text-white border-2 border-[#18181B] dark:border-[#3F3F46] mx-auto flex items-center justify-center">
+            <Radio className="w-6 h-6 text-[#6C5CE7]" />
+          </div>
+          <h2 className="font-display text-xl sm:text-2xl font-extrabold text-[#18181B] dark:text-white uppercase">
+            CLARIFICATION NEEDED
+          </h2>
+          <p className="text-xs sm:text-sm text-[#18181B]/80 dark:text-gray-300 leading-relaxed">
+            "{report.userQuery || userQuery}" requires a more specific topic for news signal analysis.
+          </p>
+          <button
+            onClick={handleTryNewQuery}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#6C5CE7] text-white text-xs font-bold font-mono uppercase border-2 border-[#18181B] shadow-brutal-sm cursor-pointer"
+          >
+            <span>TRY A SPECIFIC QUERY</span>
+          </button>
+        </div>
       </PageContainer>
     );
   }
@@ -89,10 +144,10 @@ export default function ReportPage() {
           <div className="w-12 h-12 bg-[#FF7A59]/10 text-[#FF7A59] border-2 border-[#18181B] mx-auto flex items-center justify-center">
             <AlertCircle className="w-6 h-6" />
           </div>
-          <h2 className="font-display text-xl sm:text-2xl font-extrabold text-[#18181B] uppercase">
+          <h2 className="font-display text-xl sm:text-2xl font-extrabold text-[#18181B] dark:text-white uppercase">
             ANALYSIS FAILED
           </h2>
-          <p className="text-xs sm:text-sm text-[#18181B]/80 leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#18181B]/80 dark:text-gray-300 leading-relaxed">
             {error}
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
@@ -123,11 +178,11 @@ export default function ReportPage() {
           <div className="w-12 h-12 bg-[#18181B] text-[#6C5CE7] border-2 border-[#18181B] mx-auto flex items-center justify-center">
             <Radio className="w-6 h-6" />
           </div>
-          <h2 className="font-display text-xl sm:text-2xl font-extrabold text-[#18181B] uppercase">
+          <h2 className="font-display text-xl sm:text-2xl font-extrabold text-[#18181B] dark:text-white uppercase">
             REPORT NOT FOUND
           </h2>
-          <p className="text-xs sm:text-sm text-[#18181B]/80">
-            No analysis report found for ID <code className="bg-[#18181B]/5 px-1.5 py-0.5 border border-[#18181B]">{reportId}</code>.
+          <p className="text-xs sm:text-sm text-[#18181B]/80 dark:text-gray-300">
+            No analysis report found for ID <code className="bg-[#18181B]/5 dark:bg-white/10 px-1.5 py-0.5 border border-[#18181B]">{reportId}</code>.
           </p>
           <Link
             to="/"
@@ -154,7 +209,7 @@ export default function ReportPage() {
         {report.whatMattersMost && report.whatMattersMost.length > 0 && (
           <section className="w-full space-y-3 sm:space-y-4 font-mono">
             <div className="flex items-center gap-2">
-              <span className="font-display text-base sm:text-xl font-extrabold text-[#18181B] uppercase">
+              <span className="font-display text-base sm:text-xl font-extrabold text-[#18181B] dark:text-white uppercase">
                 WHAT MATTERS MOST
               </span>
               <span className="text-[10px] sm:text-xs font-bold text-[#6C5CE7] bg-[#C9BFFF]/50 px-2 py-0.5 border border-[#18181B]">
