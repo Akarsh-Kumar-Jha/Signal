@@ -1,10 +1,9 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Target, Compass, Zap, Sun, Moon, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Target, Zap, Sun, Moon, ExternalLink } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 export default function Navbar({ onOpenHowItWorks }) {
-  const location = useLocation();
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -43,21 +42,6 @@ export default function Navbar({ onOpenHowItWorks }) {
             <span className="hidden xs:inline">HOW IT WORKS</span>
             <span className="xs:hidden">WORKS</span>
           </button>
-
-          <span className="text-white/30 hidden xs:inline">•</span>
-
-          <Link
-            to="/today"
-            className={`transition-colors flex items-center gap-1 shrink-0 ${
-              location.pathname === '/today'
-                ? 'text-[#B8E986] underline decoration-2 underline-offset-4'
-                : 'text-white/80 hover:text-white'
-            }`}
-          >
-            <Compass className="w-3 h-3 text-[#F3A6C8]" />
-            <span className="hidden xs:inline">TODAY'S SIGNALS</span>
-            <span className="xs:hidden">SIGNALS</span>
-          </Link>
 
           <button
             onClick={toggleTheme}
