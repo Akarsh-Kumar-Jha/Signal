@@ -5,10 +5,42 @@ import { Radio, Calendar, Share2, Check, ArrowLeft } from 'lucide-react';
 export default function ReportHeader({ userQuery, timestamp }) {
   const [copied, setCopied] = useState(false);
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+  const handleShare = async () => {
+    const url = window.location.href;
+
+    // Web Share API fallback for mobile devices
+    if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
+      try {
+        await navigator.share({
+          title: `SignalAI Report - ${userQuery}`,
+          text: `Check out this SignalAI intelligence report on "${userQuery}"`,
+          url: url,
+        });
+        return;
+      } catch (err) {
+        // User cancelled or share failed, fallback to copy
+      }
+    }
+
+    // Clipboard copy with fallback for all browser contexts
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = url;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-999999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+    }
   };
 
   const formattedDate = timestamp
