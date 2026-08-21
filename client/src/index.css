@@ -1,0 +1,175 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --color-paper: #F3F1EC;
+  --color-dark-nav: #101114;
+  --color-charcoal: #18181B;
+  --color-purple-accent: #6C5CE7;
+  --color-purple-deep: #5B4FC7;
+  --color-pink-accent: #F3A6C8;
+  --color-green-accent: #B8E986;
+  --color-lavender-accent: #C9BFFF;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background-color: #F3F1EC;
+    color: #18181B;
+    overflow-x: hidden;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  html.dark body {
+    background-color: #0D0E12 !important;
+    color: #F3F4F6 !important;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+  }
+
+  code, pre, .font-mono {
+    font-family: var(--font-mono);
+  }
+}
+
+/* Hard Brutalism Offset Shadows */
+.shadow-brutal-sm {
+  box-shadow: 3px 3px 0px #18181B;
+}
+
+html.dark .shadow-brutal-sm {
+  box-shadow: 3px 3px 0px #6C5CE7;
+}
+
+.shadow-brutal {
+  box-shadow: 6px 6px 0px #18181B;
+}
+
+html.dark .shadow-brutal {
+  box-shadow: 6px 6px 0px #6C5CE7;
+}
+
+.shadow-brutal-lg {
+  box-shadow: 8px 8px 0px #18181B;
+}
+
+html.dark .shadow-brutal-lg {
+  box-shadow: 8px 8px 0px #6C5CE7;
+}
+
+/* Hover Tactile Interaction */
+.btn-brutal {
+  border: 2px solid #18181B;
+  box-shadow: 4px 4px 0px #18181B;
+  transition: all 0.15s ease-in-out;
+}
+
+html.dark .btn-brutal {
+  border-color: #3F3F46;
+  box-shadow: 4px 4px 0px #6C5CE7;
+}
+
+.btn-brutal:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #18181B;
+}
+
+html.dark .btn-brutal:hover {
+  box-shadow: 6px 6px 0px #8B5CF6;
+}
+
+.btn-brutal:active {
+  transform: translate(0px, 0px);
+  box-shadow: 2px 2px 0px #18181B;
+}
+
+.panel-brutal {
+  background-color: #FAF8F5;
+  border: 2px solid #18181B;
+  box-shadow: 6px 6px 0px #18181B;
+  color: #18181B;
+}
+
+html.dark .panel-brutal {
+  background-color: #16181E !important;
+  border-color: #3F3F46 !important;
+  box-shadow: 6px 6px 0px #6C5CE7 !important;
+  color: #F3F4F6 !important;
+}
+
+/* Dark Theme Overrides - STRICTLY scoped to html.dark */
+html.dark div[class*="bg-[#FAF8F5]"],
+html.dark section[class*="bg-[#FAF8F5]"],
+html.dark header[class*="bg-[#FAF8F5]"] {
+  background-color: #16181E !important;
+  color: #F3F4F6 !important;
+}
+
+html.dark div[class*="bg-[#F3F1EC]"] {
+  background-color: #0D0E12 !important;
+}
+
+html.dark div[class*="bg-[#EAE6FE]"] {
+  background-color: #1B1833 !important;
+  color: #F3F4F6 !important;
+}
+
+html.dark div[class*="bg-white"],
+html.dark button[class*="bg-white"],
+html.dark a[class*="bg-white"] {
+  background-color: #1E2028 !important;
+  color: #F3F4F6 !important;
+  border-color: #3F3F46;
+}
+
+html.dark .text-\[\#18181B\] {
+  color: #F3F4F6 !important;
+}
+
+html.dark .text-\[\#18181B\]\/90,
+html.dark .text-\[\#18181B\]\/80,
+html.dark .text-\[\#18181B\]\/70 {
+  color: #D1D5DB !important;
+}
+
+html.dark .text-\[\#18181B\]\/60,
+html.dark .text-\[\#18181B\]\/50,
+html.dark .text-\[\#18181B\]\/40 {
+  color: #9CA3AF !important;
+}
+
+html.dark .border-\[\#18181B\] {
+  border-color: #3F3F46 !important;
+}
+
+html.dark .border-\[\#18181B\]\/15,
+html.dark .border-\[\#18181B\]\/20 {
+  border-color: #27272A !important;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F3F1EC;
+}
+html.dark ::-webkit-scrollbar-track {
+  background: #0D0E12;
+}
+::-webkit-scrollbar-thumb {
+  background: #18181B;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #6C5CE7;
+}
