@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import PageContainer from '../components/layout/PageContainer';
 import AnalysisProgress from '../components/analysis/AnalysisProgress';
 import ReportHeader from '../components/report/ReportHeader';
@@ -20,7 +20,10 @@ import { AlertCircle, RefreshCw, PlusCircle, Radio } from 'lucide-react';
 
 export default function ReportPage() {
   const { reportId } = useParams();
+  const [searchParams] = useSearchParams();
+  const queryFromUrl = searchParams.get('q');
   const navigate = useNavigate();
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [report, setReport] = useState(null);
@@ -54,8 +57,9 @@ export default function ReportPage() {
     // 1. Check if report already exists in storage
     const cached = getReport(reportId);
     if (cached) {
-      const normalized = normalizeReport(cached.data, cached.query);
-      setUserQuery(cached.query);
+      const activeQuery = queryFromUrl || cached.query;
+      const normalized = normalizeReport(cached.data, activeQuery);
+      setUserQuery(activeQuery);
       setReport(normalized);
       if (normalized.validQuery === false) {
         setShowClarificationModal(true);
@@ -64,11 +68,11 @@ export default function ReportPage() {
       return;
     }
 
-    // 2. Check if pending query exists from landing page navigation
-    const pendingQuery = getPendingQuery(reportId);
-    if (pendingQuery) {
-      setUserQuery(pendingQuery);
-      fetchAnalysis(pendingQuery);
+    // 2. Check if queryParam or pending query exists
+    const activeQuery = queryFromUrl || getPendingQuery(reportId);
+    if (activeQuery) {
+      setUserQuery(activeQuery);
+      fetchAnalysis(activeQuery);
       return;
     }
 
@@ -83,7 +87,7 @@ export default function ReportPage() {
     } else {
       setLoading(false);
     }
-  }, [reportId]);
+  }, [reportId, queryFromUrl]);
 
   const handleCloseModal = () => {
     setShowClarificationModal(false);
@@ -116,7 +120,7 @@ export default function ReportPage() {
           onTryNewQuery={handleTryNewQuery}
         />
         <div className="max-w-md mx-auto px-4 py-20 text-center space-y-4 font-mono">
-          <div className="w-12 h-12 bg-[#F3A6C8]/20 text-[#18181B] dark:text-white border-2 border-[#18181B] dark:border-[#3F3F46] mx-auto flex items-center justify-center">
+          <div className="w-12 h-12 bg-[#F3A6C8]/20 text-[#18181B] dark:text-white border-2 border-[#18181B] dark:border-[#3F3F46] mx-auto flex items-center justify-center font-bold">
             <Radio className="w-6 h-6 text-[#6C5CE7]" />
           </div>
           <h2 className="font-display text-xl sm:text-2xl font-extrabold text-[#18181B] dark:text-white uppercase">

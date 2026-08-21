@@ -12,7 +12,7 @@ export default function LandingPage() {
   const handleQuerySubmit = (userQuery) => {
     const reportId = generateReportId(userQuery);
     savePendingQuery(reportId, userQuery);
-    navigate(`/report/${reportId}`);
+    navigate(`/report/${reportId}?q=${encodeURIComponent(userQuery)}`);
   };
 
   return (
