@@ -22,10 +22,18 @@ export async function analyzeQuery(userQuery) {
     body: JSON.stringify({ user_query: userQuery }),
   });
 
-  if (!res.ok) {
-    const errData = await res.json().catch(() => ({}));
-    throw new Error(errData.error || `Server error: ${res.statusText}`);
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok || data.success === false) {
+    const errorMsg =
+      typeof data.error === 'string'
+        ? data.error
+        : typeof data.error === 'object' && data.error?.message
+        ? data.error.message
+        : data.message || `Server error (${res.status}): Unable to complete graph execution.`;
+
+    throw new Error(errorMsg);
   }
 
-  return res.json();
+  return data;
 }

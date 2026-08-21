@@ -173,3 +173,31 @@ html.dark ::-webkit-scrollbar-track {
 html.dark ::-webkit-scrollbar-thumb {
   background: #6C5CE7;
 }
+
+/* Print Styles for PDF Export */
+@media print {
+  header,
+  nav,
+  button,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+  body, html {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+  .shadow-brutal,
+  .shadow-brutal-sm,
+  .shadow-brutal-lg {
+    box-shadow: none !important;
+    border-width: 1px !important;
+    border-color: #000000 !important;
+  }
+  .panel-brutal {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border-width: 1px !important;
+    box-shadow: none !important;
+  }
+}

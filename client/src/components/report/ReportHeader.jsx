@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Radio, Calendar, Share2, Check, ArrowLeft } from 'lucide-react';
+import { Radio, Calendar, Share2, Check, ArrowLeft, Download } from 'lucide-react';
 
 export default function ReportHeader({ userQuery, timestamp }) {
   const [copied, setCopied] = useState(false);
@@ -43,6 +43,10 @@ export default function ReportHeader({ userQuery, timestamp }) {
     }
   };
 
+  const handleDownloadPDF = () => {
+    window.print();
+  };
+
   const formattedDate = timestamp
     ? new Date(timestamp).toLocaleDateString('en-US', {
         month: 'short',
@@ -59,7 +63,7 @@ export default function ReportHeader({ userQuery, timestamp }) {
     <div className="w-full bg-[#EAE6FE] dark:bg-[#1B1833] text-[#18181B] dark:text-[#F3F4F6] border-b-2 border-[#18181B] dark:border-[#3F3F46] border-t-4 border-t-[#6C5CE7] py-5 sm:py-7 px-3 sm:px-6 lg:px-8 font-mono shadow-brutal-sm">
       <div className="max-w-6xl mx-auto space-y-3 sm:space-y-4">
         {/* Top Controls */}
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 no-print">
           <Link
             to="/"
             className="px-3 py-1.5 bg-white dark:bg-[#16181E] border-2 border-[#18181B] dark:border-[#3F3F46] text-[10px] sm:text-xs font-bold text-[#18181B] dark:text-[#F3F4F6] shadow-brutal-sm hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all flex items-center gap-1.5 shrink-0"
@@ -68,22 +72,33 @@ export default function ReportHeader({ userQuery, timestamp }) {
             <span>[ NEW ANALYSIS ]</span>
           </Link>
 
-          <button
-            onClick={handleShare}
-            className="px-3 py-1.5 bg-[#6C5CE7] text-white border-2 border-[#18181B] dark:border-[#3F3F46] text-[10px] sm:text-xs font-bold shadow-brutal-sm hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
-          >
-            {copied ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-[#B8E986]" />
-                <span>LINK COPIED!</span>
-              </>
-            ) : (
-              <>
-                <Share2 className="w-3.5 h-3.5" />
-                <span>[ SHARE REPORT ↗ ]</span>
-              </>
-            )}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleDownloadPDF}
+              className="px-3 py-1.5 bg-[#B8E986] hover:bg-[#a3dc69] text-[#18181B] border-2 border-[#18181B] dark:border-[#3F3F46] text-[10px] sm:text-xs font-extrabold shadow-brutal-sm hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+              title="Download Report as PDF"
+            >
+              <Download className="w-3.5 h-3.5 text-[#18181B]" />
+              <span>[ DOWNLOAD PDF ]</span>
+            </button>
+
+            <button
+              onClick={handleShare}
+              className="px-3 py-1.5 bg-[#6C5CE7] hover:bg-[#5b4fc7] text-white border-2 border-[#18181B] dark:border-[#3F3F46] text-[10px] sm:text-xs font-bold shadow-brutal-sm hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-[#B8E986]" />
+                  <span>LINK COPIED!</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-3.5 h-3.5" />
+                  <span>[ SHARE REPORT ↗ ]</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Small Technical Badge */}

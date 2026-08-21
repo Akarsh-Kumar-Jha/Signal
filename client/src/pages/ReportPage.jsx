@@ -12,11 +12,12 @@ import WatchNext from '../components/report/WatchNext';
 import SourcesList from '../components/report/SourcesList';
 import ReportQuality from '../components/report/ReportQuality';
 import ClarificationModal from '../components/common/ClarificationModal';
+import ErrorModal from '../components/common/ErrorModal';
 
 import { analyzeQuery } from '../services/api';
 import { getReport, saveReport, getPendingQuery, removePendingQuery } from '../utils/storage';
 import { normalizeReport } from '../utils/normalize';
-import { AlertCircle, RefreshCw, PlusCircle, Radio } from 'lucide-react';
+import { AlertCircle, RefreshCw, PlusCircle, Radio, AlertTriangle } from 'lucide-react';
 
 export default function ReportPage() {
   const { reportId } = useParams();
@@ -29,10 +30,12 @@ export default function ReportPage() {
   const [report, setReport] = useState(null);
   const [userQuery, setUserQuery] = useState('');
   const [showClarificationModal, setShowClarificationModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const fetchAnalysis = async (queryToRun) => {
     setLoading(true);
     setError(null);
+    setShowErrorModal(false);
     try {
       const rawData = await analyzeQuery(queryToRun);
       const normalized = normalizeReport(rawData, queryToRun);
@@ -48,6 +51,7 @@ export default function ReportPage() {
     } catch (err) {
       console.error('Error analyzing query:', err);
       setError(err.message || 'Failed to connect to SignalAI backend.');
+      setShowErrorModal(true);
     } finally {
       setLoading(false);
     }
@@ -144,14 +148,27 @@ export default function ReportPage() {
   if (error) {
     return (
       <PageContainer>
+        <ErrorModal
+          isOpen={showErrorModal}
+          errorMessage={error}
+          onClose={() => {
+            setShowErrorModal(false);
+            navigate('/');
+          }}
+          onRetry={() => {
+            setShowErrorModal(false);
+            fetchAnalysis(userQuery);
+          }}
+        />
+
         <div className="max-w-md mx-auto px-4 py-12 sm:py-16 text-center space-y-4 font-mono">
-          <div className="w-12 h-12 bg-[#FF7A59]/10 text-[#FF7A59] border-2 border-[#18181B] mx-auto flex items-center justify-center">
-            <AlertCircle className="w-6 h-6" />
+          <div className="w-12 h-12 bg-[#FF7A59]/10 text-[#FF7A59] border-2 border-[#18181B] mx-auto flex items-center justify-center font-bold">
+            <AlertTriangle className="w-6 h-6" />
           </div>
           <h2 className="font-display text-xl sm:text-2xl font-extrabold text-[#18181B] dark:text-white uppercase">
             ANALYSIS FAILED
           </h2>
-          <p className="text-xs sm:text-sm text-[#18181B]/80 dark:text-gray-300 leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#18181B]/80 dark:text-gray-300 leading-relaxed break-words">
             {error}
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
@@ -179,7 +196,7 @@ export default function ReportPage() {
     return (
       <PageContainer>
         <div className="max-w-md mx-auto px-4 py-16 text-center space-y-4 font-mono">
-          <div className="w-12 h-12 bg-[#18181B] text-[#6C5CE7] border-2 border-[#18181B] mx-auto flex items-center justify-center">
+          <div className="w-12 h-12 bg-[#18181B] text-[#6C5CE7] border-2 border-[#18181B] mx-auto flex items-center justify-center font-bold">
             <Radio className="w-6 h-6" />
           </div>
           <h2 className="font-display text-xl sm:text-2xl font-extrabold text-[#18181B] dark:text-white uppercase">
